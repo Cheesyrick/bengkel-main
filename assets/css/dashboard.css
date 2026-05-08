@@ -1,0 +1,71 @@
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background-color: #e2e8f0; /* Silver background */
+    margin: 0; 
+}
+
+.header { 
+    background-color: #d32f2f; /* Red header */
+    color: white; 
+    padding: 15px 30px; 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header h2 {
+    margin: 0;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.header img {
+    height: 40px;
+    margin-right: 15px;
+    background: white;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.content { 
+    padding: 40px 20px; 
+    text-align: center; 
+}
+
+.card { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+            max-width: 600px; 
+            margin: 0 auto; 
+            border-top: 4px solid #d32f2f;
+        }
+
+btn-logout { 
+    background-color: #ffffff; 
+    color: #d32f2f; 
+    text-decoration: none; 
+    padding: 8px 20px; 
+    border-radius: 4px; 
+    font-weight: bold; 
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.role-badge {
+    display: inline-block;
+    background-color: #d32f2f;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}

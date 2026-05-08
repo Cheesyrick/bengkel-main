@@ -1,0 +1,26 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    background-color: #ffffff;
+    padding: 20px 0;
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.03);
+    margin-top: auto;
+    width: 100%;
+    border-top: 3px solid #d32f2f; /* Matching the red accent from dashboard.css */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+footer .text-muted {
+    color: #666 !important;
+}
+
+footer .mid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
