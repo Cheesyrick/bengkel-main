@@ -166,4 +166,35 @@ Fitur: Generate Laporan Bulanan
 - [x] Fitur edit data pengguna, dengan opsi untuk membiarkan password lama atau memperbaruinya (`owner/akun_pengguna/edit.php`).
 - [x] Fitur hapus akun pengguna dengan sistem keamanan (mencegah Owner menghapus akunnya sendiri yang sedang aktif) (`owner/akun_pengguna/delete.php`).
 
+✅ **5. Pembaruan Skema Database**
+
+- [x] Memperbarui struktur database ke versi terbaru (`db_bengkel_bengawan_revisi.sql`).
+- [x] Pemisahan tabel `pelanggan` dan `mobil` yang saling berelasi dengan tipe data dan `Foreign Key` yang sesuai.
+- [x] Implementasi struktur relasi tabel yang lebih ketat dengan memanfaatkan `ON DELETE CASCADE` untuk menjaga integritas data otomatis.
+
+✅ **6. Modul Pelanggan & Mobil (Operasional)**
+
+- [x] Fitur penambahan data (`add.php`): Menggunakan PHP Database Transaction untuk menyimpan profil pelanggan (`pelanggan`) beserta kendaraannya (`mobil`) secara serentak dan aman.
+- [x] Tampilan daftar data (`list.php`): Mengimplementasikan SQL `JOIN` untuk menggabungkan relasi agar informasi pelanggan dan spesifikasi kendaraan tampil dalam satu tabel terpadu.
+- [x] Fitur edit data (`edit.php`): Form terpadu multi-table untuk memperbarui detail pelanggan dan spesifikasi kendaraan sekaligus.
+- [x] Fitur hapus data (`delete.php`): Terintegrasi dengan fitur Cascade database.
+
+✅ **7. Modul Data Master Jasa (Khusus Owner)**
+
+- [x] Implementasi fitur pengelolaan Kategori/Jenis Jasa (`addjenis.php`, `editjenis.php`, `deletejenis.php`, `listjenis.php`).
+- [x] Sinkronisasi tampilan UI dan perbaikan _bugs_ layout/CSS kritis pada halaman list jenis jasa agar menggunakan template font dan alignment yang benar.
+
+✅ **8. Modul Permintaan Servis (Owner & SA)**
+
+- [x] Perbaikan query SQL yang rusak di halaman list (`list.php`) agar sinkron dengan skema database yang baru; menggabungkan jasa (menggunakan `GROUP_CONCAT`) dan status pengerjaan secara akurat.
+- [x] Penambahan permintaan servis baru (`add.php`):
+  - [x] Dropdown dinamis `Mobil` yang otomatis memfilter daftar spesifik kendaraan secara real-time (JavaScript) berdasarkan dropdown `Pelanggan` yang dipilih.
+  - [x] Sistem form transaksi aman (Multi-table Database Transaction): Menginput data sekaligus secara konsisten ke 4 tabel berbeda (`permintaan_servis`, `detail_servis`, `detail_sparepart`, dan `detail_pengerjaan` jika mekanik didelegasikan).
+- [x] Sinkronisasi label status warna (`Pending`, `Assigned`, `Done`) di antarmuka dashboard agar sesuai dengan data asli database.
+
+✅ **9. Optimalisasi Sidebar Navigasi**
+
+- [x] Penataan ulang (decluttering) Sidebar Menu, khususnya pengelompokkan submenu untuk modul _Data Sparepart_ menjadi _Nested Dropdowns_ (Dropdown dalam Dropdown).
+- [x] Penyesuaian `sidebar.css` murni untuk memberikan indentasi dan animasi pada Nested Dropdowns tanpa script tambahan.
+
 _(Catatan progress akan terus diperbarui seiring dengan pengembangan fitur selanjutnya)_

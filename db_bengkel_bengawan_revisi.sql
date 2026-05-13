@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2026 at 03:04 PM
+-- Generation Time: May 13, 2026 at 07:40 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -78,6 +78,14 @@ CREATE TABLE `jasa` (
   `harga_jasa` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `jasa`
+--
+
+INSERT INTO `jasa` (`id_jasa`, `id_jenis_jasa`, `nama_jasa`, `estimasi_waktu`, `harga_jasa`) VALUES
+(1, 1, 'Repair Custom', 90, 500000),
+(2, 2, 'Refinishing Standart', 200, 800000);
+
 -- --------------------------------------------------------
 
 --
@@ -88,6 +96,17 @@ CREATE TABLE `jenis_jasa` (
   `id_jenis_jasa` int(11) NOT NULL,
   `nama_jenis_jasa` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `jenis_jasa`
+--
+
+INSERT INTO `jenis_jasa` (`id_jenis_jasa`, `nama_jenis_jasa`) VALUES
+(1, 'Body Repair'),
+(2, 'Refinishing'),
+(3, 'Restoration / Detailing'),
+(4, 'Extensive Services'),
+(5, 'Low Rider (Ceper)');
 
 -- --------------------------------------------------------
 
@@ -112,6 +131,13 @@ CREATE TABLE `mekanik` (
   `spesialisasi` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `mekanik`
+--
+
+INSERT INTO `mekanik` (`id_pengguna`, `nama_mekanik`, `spesialisasi`) VALUES
+(4, 'sandiaga', 'ngelas');
+
 -- --------------------------------------------------------
 
 --
@@ -122,6 +148,14 @@ CREATE TABLE `merk` (
   `id_merk` int(11) NOT NULL,
   `nama_merk` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `merk`
+--
+
+INSERT INTO `merk` (`id_merk`, `nama_merk`) VALUES
+(4, 'test'),
+(5, 'lagi test');
 
 -- --------------------------------------------------------
 
@@ -191,15 +225,18 @@ CREATE TABLE `pengguna` (
   `id_pengguna` int(11) NOT NULL,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('owner','service_advisor','mechanic','') NOT NULL
+  `role` enum('owner','service_advisor','mechanic','') NOT NULL,
+  `is_first_login` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `pengguna`
 --
 
-INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `role`) VALUES
-(4, 'sandi', '1234', 'owner');
+INSERT INTO `pengguna` (`id_pengguna`, `username`, `password`, `role`, `is_first_login`) VALUES
+(4, 'sandi', '81dc9bdb52d04dc20036dbd8313ed055', 'owner', 0),
+(5, 'andi', 'e10adc3949ba59abbe56e057f20f883e', 'service_advisor', 0),
+(6, 'Edo', '81dc9bdb52d04dc20036dbd8313ed055', 'mechanic', 0);
 
 -- --------------------------------------------------------
 
@@ -214,6 +251,13 @@ CREATE TABLE `permintaan_servis` (
   `tanggal_masuk` datetime NOT NULL DEFAULT current_timestamp(),
   `tanggal_keluar` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `permintaan_servis`
+--
+
+INSERT INTO `permintaan_servis` (`id_permintaan`, `id_mobil`, `keluhan`, `tanggal_masuk`, `tanggal_keluar`) VALUES
+(5, 2, 'mogok', '2026-05-10 00:58:58', NULL);
 
 -- --------------------------------------------------------
 
@@ -395,13 +439,13 @@ ALTER TABLE `detail_sparepart`
 -- AUTO_INCREMENT for table `jasa`
 --
 ALTER TABLE `jasa`
-  MODIFY `id_jasa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_jasa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `jenis_jasa`
 --
 ALTER TABLE `jenis_jasa`
-  MODIFY `id_jenis_jasa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_jenis_jasa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `kategori_sparepart`
@@ -413,25 +457,25 @@ ALTER TABLE `kategori_sparepart`
 -- AUTO_INCREMENT for table `mekanik`
 --
 ALTER TABLE `mekanik`
-  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `merk`
 --
 ALTER TABLE `merk`
-  MODIFY `id_merk` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_merk` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `mobil`
 --
 ALTER TABLE `mobil`
-  MODIFY `id_mobil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_mobil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `pelanggan`
 --
 ALTER TABLE `pelanggan`
-  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pelanggan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `pembayaran`
@@ -443,13 +487,13 @@ ALTER TABLE `pembayaran`
 -- AUTO_INCREMENT for table `pengguna`
 --
 ALTER TABLE `pengguna`
-  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pengguna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `permintaan_servis`
 --
 ALTER TABLE `permintaan_servis`
-  MODIFY `id_permintaan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_permintaan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `satuan`
@@ -515,12 +559,6 @@ ALTER TABLE `mekanik`
   ADD CONSTRAINT `fk_mekanik_pengguna` FOREIGN KEY (`id_pengguna`) REFERENCES `pengguna` (`id_pengguna`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `merk`
---
-ALTER TABLE `merk`
-  ADD CONSTRAINT `merk_ibfk_1` FOREIGN KEY (`id_merk`) REFERENCES `sparepart` (`id_merk`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `mobil`
 --
 ALTER TABLE `mobil`
@@ -546,8 +584,23 @@ ALTER TABLE `sparepart`
 --
 ALTER TABLE `tipe_sparepart`
   ADD CONSTRAINT `tipe_sparepart_ibfk_1` FOREIGN KEY (`id_tipe_sp`) REFERENCES `sparepart` (`id_tipe_sp`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Table structure for table `password_requests`
+--
+CREATE TABLE `password_requests` (
+  `id_request` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pengguna` int(11) NOT NULL,
+  `status` enum('pending','completed') NOT NULL DEFAULT 'pending',
+  `request_date` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_request`),
+  KEY `fk_request_pengguna` (`id_pengguna`),
+  CONSTRAINT `fk_req_pengguna` FOREIGN KEY (`id_pengguna`) REFERENCES `pengguna` (`id_pengguna`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

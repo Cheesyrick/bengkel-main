@@ -15,54 +15,10 @@ $result = mysqli_query($conn, $query);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Akun Pengguna | Broom Garage</title>
+    <title>Daftar Akun Pengguna | Bengkel Bengawan</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
     <link href="../../assets/css/dashboard.css" rel="stylesheet">
-    <style>
-        .table-container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin: 20px auto;
-            max-width: 900px;
-            border-top: 4px solid #d32f2f;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        th {
-            background-color: #f8f9fa;
-            color: #333;
-            font-weight: 600;
-        }
-        .btn {
-            padding: 8px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 13px;
-            color: white;
-            display: inline-block;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        .btn-add { background-color: #4CAF50; margin-bottom: 20px; font-size: 15px; padding: 10px 20px;}
-        .btn-edit { background-color: #2196F3; }
-        .btn-delete { background-color: #f44336; }
-        .btn-add:hover { background-color: #45a049; }
-        .btn-edit:hover { background-color: #0b7dda; }
-        .btn-delete:hover { background-color: #da190b; }
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; font-weight: bold;}
-        .alert-success { background-color: #dff0d8; color: #3c763d; border: 1px solid #d6e9c6; }
-        .alert-danger { background-color: #f2dede; color: #a94442; border: 1px solid #ebccd1; }
-    </style>
+    <link rel="stylesheet" href="../../assets/css/list.css">
 </head>
 <body>
     <?php include '../../includes/sidebar.php'; ?>
@@ -108,7 +64,15 @@ $result = mysqli_query($conn, $query);
                             <td><?php echo $no++; ?></td>
                             <td><strong><?php echo htmlspecialchars($row['username']); ?></strong></td>
                             <td>
-                                <span class="role-badge" style="font-size: 12px; margin-top:0;">
+                                <?php
+                                    $bg_color = '#d32f2f'; // Owner default (red)
+                                    if ($row['role'] == 'mechanic') {
+                                        $bg_color = '#ff9800'; // Orange
+                                    } elseif ($row['role'] == 'service_advisor') {
+                                        $bg_color = '#1b5e20'; // Dark Green
+                                    }
+                                ?>
+                                <span class="role-badge" style="font-size: 12px; margin-top:0; background-color: <?php echo $bg_color; ?>;">
                                     <?php echo strtoupper(htmlspecialchars($row['role'])); ?>
                                 </span>
                             </td>

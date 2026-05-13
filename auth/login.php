@@ -20,18 +20,27 @@
             $_SESSION['id_pengguna'] = $row_pengguna['id_pengguna'];
             $_SESSION['username'] = $row_pengguna['username'];
             $_SESSION['role'] = $row_pengguna['role'];
-            header("location:dashboardadmin.php");
+            $_SESSION['is_first_login'] = $row_pengguna['is_first_login'];
+
+            if ($row_pengguna['is_first_login'] == 1) {
+                header("location:force_change_password.php");
+                exit();
+            } else {
+                header("location:dashboardadmin.php");
+                exit();
+            }
         }
         else
         {
             $error_message = "Username atau password salah!";
         }
     }
+
 ?>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Broom Garage Login</title>
+  <title>Bengkel Bengawan Login</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
   <link href="../assets/css/loginstyle.css" rel="stylesheet">
 </head>
@@ -47,6 +56,7 @@
             </div>
         <?php endif; ?>
 
+
         <form method="POST" action="">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
@@ -56,7 +66,8 @@
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" class="form-control" name="password" id="password" required>
             </div>
-            <button type="submit" name="submitlogin" class="btn-login">Login</button>
+            <button type="submit" name="submitlogin" class="btn-login" style="margin-bottom: 10px;">Login</button>
+            <a href="request_reset.php" class="btn-login" style="background-color: #ff9800; border: none; color: white; display: inline-block; text-align: center; text-decoration: none; padding: 12px; border-radius: 4px; width: 100%; box-sizing: border-box;">Lupa Password?</a>
         </form>
     </div>
 
