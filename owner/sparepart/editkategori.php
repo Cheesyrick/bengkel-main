@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($nama_kategori_sparepart)) {
         $_SESSION['pesan_error'] = "Nama kategori sparepart harus diisi!";
     } else {
-        $query_update = "UPDATE kategori_sparepart SET nama_kategori_sparepart = ? WHERE id_kategori_sparepart = ?";
+        $query_update = "UPDATE kategori_sparepart SET nama_kategori = ? WHERE id_kategori = ?";
         $stmt_update = $conn->prepare($query_update);
         $stmt_update->bind_param("si", $nama_kategori_sparepart, $id_kategori_sparepart);
         
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 // Ambil data yang mau diedit
-$query = "SELECT * FROM kategori_sparepart WHERE id_kategori_sparepart = ?";
+$query = "SELECT * FROM kategori_sparepart WHERE id_kategori = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $id_kategori_sparepart);
 $stmt->execute();
@@ -83,7 +83,7 @@ $data = $result->fetch_assoc();
             <form action="" method="POST">
                 <div class="form-group">
                     <label>Nama Kategori Sparepart:</label>
-                    <input type="text" name="nama_kategori_sparepart" class="form-control" value="<?php echo htmlspecialchars($data['nama_kategori_sparepart']); ?>" required>
+                    <input type="text" name="nama_kategori_sparepart" class="form-control" value="<?php echo htmlspecialchars($data['nama_kategori']); ?>" required>
                 </div>
 
                 <button type="submit" class="btn btn-submit">Update Kategori Sparepart</button>
