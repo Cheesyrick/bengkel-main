@@ -93,6 +93,3 @@ bengkel-main/
 - **Service Requests:** Dynamic form with real-time vehicle filtering (JS) and multi-table inserts.
 - **Spare Parts & Inventory:** Multi-sparepart support per service, automatic stock deduction, and rollback when edits occur.
 - **Billing & Invoice:** Checkout page with auto-calculation, payment history, and PDF printing.
-
-### ⏳ Upcoming Features
-- [ ] Mechanic dashboard updates to allow marking status from `Assigned` to `Done` effectively.
