@@ -13,16 +13,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($nama_jenis_jasa)) {
         $_SESSION['pesan_error'] = "Nama jenis jasa harus diisi!";
     } else {
-        $query = "INSERT INTO jenis_jasa (nama_jenis_jasa) VALUES (?)";
-        $stmt = $conn->prepare($query);
-        $stmt->bind_param("s", $nama_jenis_jasa);
+        $nama_jenis_jasa = mysqli_real_escape_string($conn, $nama_jenis_jasa);
+
+        $query = "INSERT INTO jenis_jasa (nama_jenis_jasa) VALUES ('$nama_jenis_jasa')";
         
-        if ($stmt->execute()) {
-            $_SESSION['pesan_sukses'] = "Jenis jasa berhasil ditambahkan!";
+        if (mysqli_query($conn, $query)) {
+            $_SESSION['pesan_sukses'] = "Data jenis jasa berhasil ditambahkan!";
             header("Location: listjenis.php");
-            exit;
+            exit();
         } else {
-            $_SESSION['pesan_error'] = "Gagal menambahkan jenis jasa: " . $stmt->error;
+            $_SESSION['pesan_error'] = "Gagal menambahkan data: " . mysqli_error($conn);
+            header("Location: addjenis.php");
+            exit();
         }
     }
 }
@@ -71,3 +73,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+<?php include('../../includes/footer.php'); ?>

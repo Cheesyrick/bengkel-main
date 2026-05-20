@@ -94,3 +94,4 @@ $result_jenis = $conn->query($query_jenis);
     </div>
 </body>
 </html>
+<?php include('../../includes/footer.php'); ?>

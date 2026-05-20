@@ -12,19 +12,31 @@ include '../../config/config.php';
         $username = mysqli_real_escape_string($conn, $_POST['username']);
         $password = md5('bengkel123'); // Default password
         $role = mysqli_real_escape_string($conn, $_POST['role']);
+        $spesialisasi = isset($_POST['spesialisasi']) ? mysqli_real_escape_string($conn, $_POST['spesialisasi']) : '';
 
         // Cek jika username sudah ada
         $cek = mysqli_query($conn, "SELECT * FROM pengguna WHERE username='$username'");
         if(mysqli_num_rows($cek) > 0) {
             $_SESSION['pesan_error'] = "Username sudah digunakan!";
         } else {
-            $query = "INSERT INTO pengguna (username, password, role, is_first_login) VALUES ('$username', '$password', '$role', 1)";
-            if(mysqli_query($conn, $query)) {
+            $conn->begin_transaction();
+            try {
+                $query = "INSERT INTO pengguna (username, password, role, is_first_login) VALUES ('$username', '$password', '$role', 1)";
+                mysqli_query($conn, $query);
+                $id_pengguna = mysqli_insert_id($conn);
+
+                if ($role == 'mechanic') {
+                    $query_mekanik = "INSERT INTO mekanik (id_pengguna, nama_mekanik, spesialisasi) VALUES ('$id_pengguna', '$username', '$spesialisasi')";
+                    mysqli_query($conn, $query_mekanik);
+                }
+
+                $conn->commit();
                 $_SESSION['pesan_sukses'] = "Pengguna berhasil ditambahkan.";
                 header("Location: list.php");
                 exit();
-            } else {
-                $_SESSION['pesan_error'] = "Gagal menambahkan pengguna: " . mysqli_error($conn);
+            } catch (Exception $e) {
+                $conn->rollback();
+                $_SESSION['pesan_error'] = "Gagal menambahkan pengguna: " . $e->getMessage();
             }
         }
     }
@@ -76,10 +88,24 @@ include '../../config/config.php';
                         <option value="mechanic">Mechanic</option>
                     </select>
                 </div>
+                <div class="form-group" id="spesialisasi-group" style="display: none;">
+                    <label>Spesialisasi Mekanik</label>
+                    <input type="text" name="spesialisasi" class="form-control" placeholder="Contoh: Mesin, Kelistrikan, dll" autocomplete="off">
+                </div>
                 <button type="submit" class="btn btn-submit"><i class="fas fa-save"></i> Simpan Pengguna</button>
             </form>
         </div>
     </div>
+    
+    <script>
+        document.querySelector('select[name="role"]').addEventListener('change', function() {
+            if (this.value === 'mechanic') {
+                document.getElementById('spesialisasi-group').style.display = 'block';
+            } else {
+                document.getElementById('spesialisasi-group').style.display = 'none';
+            }
+        });
+    </script>
     
     <?php include '../../includes/footer.php'; ?>
 </body>

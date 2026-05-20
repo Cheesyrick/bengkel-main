@@ -22,9 +22,18 @@ if (mysqli_num_rows($query_get) == 0) {
 
 $user = mysqli_fetch_assoc($query_get);
 
+$spesialisasi = '';
+if ($user['role'] == 'mechanic') {
+    $q_mekanik = mysqli_query($conn, "SELECT spesialisasi FROM mekanik WHERE id_pengguna='$id'");
+    if (mysqli_num_rows($q_mekanik) > 0) {
+        $spesialisasi = mysqli_fetch_assoc($q_mekanik)['spesialisasi'];
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $role = mysqli_real_escape_string($conn, $_POST['role']);
+    $spesialisasi_post = isset($_POST['spesialisasi']) ? mysqli_real_escape_string($conn, $_POST['spesialisasi']) : '';
     
     // Cek username duplikat selain punya diri sendiri
     $cek = mysqli_query($conn, "SELECT * FROM pengguna 
@@ -34,7 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['pesan_error'] = "Username sudah digunakan oleh akun lain!";
     } 
     else {
-        if (isset($_POST['reset_password'])) 
+        $conn->begin_transaction();
+        try {
+            if (isset($_POST['reset_password'])) 
             {
                 $password = md5('bengkel123');
                 $query = "UPDATE pengguna SET username='$username', password='$password', role='$role', is_first_login=1 WHERE id_pengguna='$id'";
@@ -42,12 +53,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Cleanup request
                 mysqli_query($conn, "UPDATE password_requests SET status='completed' WHERE id_pengguna='$id' AND status='pending'");
             } 
-        else 
+            else 
             {
                 $query = "UPDATE pengguna SET username='$username', role='$role' WHERE id_pengguna='$id'";
             }
             
-            if(mysqli_query($conn, $query)) {
+            mysqli_query($conn, $query);
+
+            if ($role == 'mechanic') {
+                $cek_mekanik = mysqli_query($conn, "SELECT id_pengguna FROM mekanik WHERE id_pengguna='$id'");
+                if (mysqli_num_rows($cek_mekanik) > 0) {
+                    mysqli_query($conn, "UPDATE mekanik SET nama_mekanik='$username', spesialisasi='$spesialisasi_post' WHERE id_pengguna='$id'");
+                } else {
+                    mysqli_query($conn, "INSERT INTO mekanik (id_pengguna, nama_mekanik, spesialisasi) VALUES ('$id', '$username', '$spesialisasi_post')");
+                }
+            } else {
+                mysqli_query($conn, "DELETE FROM mekanik WHERE id_pengguna='$id'");
+            }
+
+            $conn->commit();
+
             // Update session jika mengedit akun sendiri
             if($id == $_SESSION['id_pengguna']) {
                 $_SESSION['username'] = $username;
@@ -56,10 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['pesan_sukses'] = "Pengguna berhasil diupdate.";
             header("Location: list.php");
             exit();
-            } 
-        else 
-        {
-            $_SESSION['pesan_error'] = "Gagal mengupdate pengguna: " . mysqli_error($conn);
+        } catch (Exception $e) {
+            $conn->rollback();
+            $_SESSION['pesan_error'] = "Gagal mengupdate pengguna: " . $e->getMessage();
         }
     }
 }
@@ -106,11 +130,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <option value="mechanic" <?php echo $user['role'] == 'mechanic' ? 'selected' : ''; ?>>Mechanic</option>
                     </select>
                 </div>
+                <div class="form-group" id="spesialisasi-group" style="display: <?php echo $user['role'] == 'mechanic' ? 'block' : 'none'; ?>;">
+                    <label>Spesialisasi Mekanik</label>
+                    <input type="text" name="spesialisasi" class="form-control" value="<?php echo htmlspecialchars($spesialisasi); ?>" placeholder="Contoh: Mesin, Kelistrikan, dll" autocomplete="off">
+                </div>
                 <button type="submit" name="update_user" class="btn btn-submit"><i class="fas fa-save"></i> Update Pengguna</button>
                 <button type="submit" name="reset_password" class="btn btn-warning" onclick="return confirm('Apakah Anda yakin ingin mereset password pengguna ini ke default (bengkel123)?');"><i class="fas fa-sync-alt"></i> Reset Password ke Default</button>
             </form>
         </div>
     </div>
+    
+    <script>
+        document.querySelector('select[name="role"]').addEventListener('change', function() {
+            if (this.value === 'mechanic') {
+                document.getElementById('spesialisasi-group').style.display = 'block';
+            } else {
+                document.getElementById('spesialisasi-group').style.display = 'none';
+            }
+        });
+    </script>
     
     <?php include '../../includes/footer.php'; ?>
 </body>

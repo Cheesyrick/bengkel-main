@@ -70,7 +70,7 @@ $result = mysqli_query($conn, $query);
                         <td><strong><?php echo htmlspecialchars($row['nama_jenis_jasa']); ?></strong></td>
                         <td>
                             <a href="editjenis.php?id=<?php echo $row['id_jenis_jasa']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                            <a href="deletejenis.php?id=<?php echo $row['id_jenis_jasa']; ?>" class="btn btn-delete"><i class="fas fa-trash"></i> Hapus</a>
+                            <a href="deletejenis.php?id=<?php echo $row['id_jenis_jasa']; ?>" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus jenis jasa ini?');"><i class="fas fa-trash"></i> Hapus</a>
                         </td>
                     </tr>
                     <?php endwhile; 

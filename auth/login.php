@@ -35,8 +35,8 @@
             $error_message = "Username atau password salah!";
         }
     }
-
 ?>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -46,7 +46,6 @@
 </head>
 <body>
     <div class="login-container">
-        <!-- Menggunakan logo yang direquest -->
         <img src="../assets/images/logo_broom_2.png" alt="Broom Garage Logo" class="logo-img" onerror="this.style.display='none'">
         <h2>Login Dashboard</h2>
         

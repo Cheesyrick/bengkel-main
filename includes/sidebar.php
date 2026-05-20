@@ -150,13 +150,13 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
             <li class="nav-item">
                 <input type="checkbox" id="transaksiMenuToggle" class="dropdown-cb">
                 <label for="transaksiMenuToggle" class="dropdown-toggle">
-                    <div style="display:flex; align-items:center;"><i class="fas fa-clipboard-list"></i> Transaksi Servis</div>
+                    <div style="display:flex; align-items:center;"><i class="fas fa-money-bill-wave"></i> Pembayaran</div>
                     <i class="fas fa-chevron-down float-right icon-down"></i>
                     <i class="fas fa-chevron-up float-right icon-up"></i>
                 </label>
                 <ul class="dropdown-menu">
-                    <li><a href="<?php echo $base_url; ?>/owner/transaksi_servis/list.php">Lihat Transaksi Servis</a></li>
-                    <li><a href="<?php echo $base_url; ?>/owner/transaksi_servis/add.php">Input Transaksi Servis</a></li>
+                    <li><a href="<?php echo $base_url; ?>/owner/pembayaran/list.php">Lihat Pembayaran</a></li>
+                    <li><a href="<?php echo $base_url; ?>/owner/pembayaran/add.php">Input Pembayaran</a></li>
                 </ul>
             </li>
 
@@ -192,8 +192,20 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 </ul>
             </li>
 
+            <li class="nav-item">
+                <input type="checkbox" id="transaksiMenuToggle" class="dropdown-cb">
+                <label for="transaksiMenuToggle" class="dropdown-toggle">
+                    <div style="display:flex; align-items:center;"><i class="fas fa-money-bill-wave"></i> Pembayaran</div>
+                    <i class="fas fa-chevron-down float-right icon-down"></i>
+                    <i class="fas fa-chevron-up float-right icon-up"></i>
+                </label>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php echo $base_url; ?>/service_advisor/pembayaran/list.php">Lihat Pembayaran</a></li>
+                    <li><a href="<?php echo $base_url; ?>/service_advisor/pembayaran/add.php">Input Pembayaran</a></li>
+                </ul>
+            </li>
+
             <li><a href="<?php echo $base_url; ?>/service_advisor/laporan/laporan_bulanan.php"><i class="fas fa-file-alt"></i> Laporan Bulanan</a></li>
-            <li><a href="<?php echo $base_url; ?>/service_advisor/cetak_nota.php"><i class="fas fa-print"></i> Cetak Nota</a></li>
             
         <?php elseif ($role == 'mechanic'): ?>
             <li class="nav-section">MECHANIC</li>
@@ -212,9 +224,9 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 </ul>
             </li>
         <?php endif; ?>
-        
-        <li class="nav-section">AKUN</li>
-        <li><a href="<?php echo $base_url; ?>/auth/change_password.php"><i class="fas fa-key"></i> Ganti Password</a></li>
+        <!-- <li class="nav-section">AKUN</li>
+        <li><a href="<?php echo $base_url; ?>/auth/change_password.php"><i class="fas fa-key"></i> Ganti Password</a></li> -->
+
         <li><a href="<?php echo $base_url; ?>/auth/logout.php" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-    </ul>
+    </ul> 
 </div>

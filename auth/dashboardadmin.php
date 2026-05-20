@@ -16,7 +16,7 @@ if (isset($_SESSION['is_first_login']) && $_SESSION['is_first_login'] == 1) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Bengkel Bengawan</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/dashboard.css" rel="stylesheet">
+    <link href="../assets/css/dashboard.css?v=<?php echo time(); ?>" rel="stylesheet">
 </head>
 <body>
     <?php include '../includes/sidebar.php'; ?>
@@ -77,6 +77,30 @@ if (isset($_SESSION['is_first_login']) && $_SESSION['is_first_login'] == 1) {
                 </ul>
             <?php else: ?>
                 <p style="color: #777; margin: 0;"><i class="fas fa-check-circle" style="color: #28a745;"></i> Tidak ada request reset password saat ini.</p>
+            <?php endif; ?>
+        </div>
+        <?php
+            $sp_query = "SELECT nama_sparepart, stock FROM sparepart WHERE stock <= 0 ORDER BY nama_sparepart ASC";
+            $sp_result = mysqli_query($conn, $sp_query);
+        ?>
+        <div class="card" style="margin-top: 30px; text-align: left;">
+            <h3 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                <i class="fas fa-boxes" style="color: #f44336;"></i> Stok Sparepart Habis
+            </h3>
+            
+            <?php if (mysqli_num_rows($sp_result) > 0): ?>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                <?php while ($sp = mysqli_fetch_assoc($sp_result)): ?>
+                    <li style="padding: 15px; border: 1px solid #ffcdd2; border-radius: 4px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; background-color: #ffebee;">
+                        <div>
+                            <strong style="font-size: 16px; color: #d32f2f;"><?php echo htmlspecialchars($sp['nama_sparepart']); ?></strong> 
+                        </div>
+                        <span style="background-color: #d32f2f; color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px;">Stok: <?php echo $sp['stock']; ?></span>
+                    </li>
+                <?php endwhile; ?>
+                </ul>
+            <?php else: ?>
+                <p style="color: #777; margin: 0;"><i class="fas fa-check-circle" style="color: #28a745;"></i> Semua stok sparepart aman.</p>
             <?php endif; ?>
         </div>
         <?php endif; ?>

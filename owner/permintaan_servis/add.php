@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_pelanggan = $_POST['id_pelanggan'] ?? '';
     $id_mobil = $_POST['id_mobil'] ?? '';
     $id_jasa = $_POST['id_jasa'] ?? '';
-    $id_sparepart = $_POST['id_sparepart'] ?? '';
+    $id_spareparts = $_POST['id_sparepart'] ?? [];
     $keluhan = $_POST['keluhan'] ?? '';
     $status = $_POST['status'] ?? 'pending';
     $id_mekanik = $_POST['id_mekanik'] ?? '';
@@ -42,20 +42,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_ds->bind_param("iiii", $id_permintaan, $id_jasa, $qty_jasa, $harga_jasa);
             $stmt_ds->execute();
 
-            // 3. Insert detail_sparepart (Opsional)
-            if (!empty($id_sparepart)) {
-                $query_harga_sp = "SELECT harga_jual FROM sparepart WHERE id_sparepart = ?";
+            // 3. Insert detail_sparepart (Opsional, Multiple)
+            if (!empty($id_spareparts) && is_array($id_spareparts)) {
+                $query_harga_sp = "SELECT harga_jual, stock FROM sparepart WHERE id_sparepart = ?";
                 $stmt_hsp = $conn->prepare($query_harga_sp);
-                $stmt_hsp->bind_param("i", $id_sparepart);
-                $stmt_hsp->execute();
-                $res_hsp = $stmt_hsp->get_result()->fetch_assoc();
-                $harga_sp = $res_hsp['harga_jual'];
                 
-                $qty_sp = 1;
                 $query_dsp = "INSERT INTO detail_sparepart (id_permintaan, id_sparepart, qty, harga_satuan) VALUES (?, ?, ?, ?)";
                 $stmt_dsp = $conn->prepare($query_dsp);
-                $stmt_dsp->bind_param("iiii", $id_permintaan, $id_sparepart, $qty_sp, $harga_sp);
-                $stmt_dsp->execute();
+                
+                $query_upd_sp = "UPDATE sparepart SET stock = stock - ? WHERE id_sparepart = ?";
+                $stmt_upd_sp = $conn->prepare($query_upd_sp);
+
+                foreach($id_spareparts as $id_sp) {
+                    if(empty($id_sp)) continue;
+                    
+                    $stmt_hsp->bind_param("i", $id_sp);
+                    $stmt_hsp->execute();
+                    $res_hsp = $stmt_hsp->get_result()->fetch_assoc();
+                    
+                    if($res_hsp && $res_hsp['stock'] > 0) {
+                        $harga_sp = $res_hsp['harga_jual'];
+                        $qty_sp = 1;
+                        
+                        // Insert detail
+                        $stmt_dsp->bind_param("iiii", $id_permintaan, $id_sp, $qty_sp, $harga_sp);
+                        $stmt_dsp->execute();
+                        
+                        // Deduct stock
+                        $stmt_upd_sp->bind_param("ii", $qty_sp, $id_sp);
+                        $stmt_upd_sp->execute();
+                    }
+                }
             }
 
             // 4. Insert detail_pengerjaan (Jika mekanik dipilih)
@@ -158,24 +175,25 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
                 </div>
 
                 <div class="form-group">
-                    <label>Sparepart (Opsional)</label>
-                    <select name="id_sparepart" class="form-control">
-                        <option value="">-- Tidak Ada / Pilih Sparepart --</option>
+                    <label>Sparepart (Opsional, Bisa pilih lebih dari satu)</label>
+                    <select name="id_sparepart[]" class="form-control" multiple style="height: 100px;">
                         <?php foreach($sp_data as $sp): ?>
-                            <option value="<?= $sp['id_sparepart'] ?>"><?= htmlspecialchars($sp['nama_sparepart']) ?> (Rp <?= number_format($sp['harga_jual'],0,',','.') ?>)</option>
+                            <option value="<?= $sp['id_sparepart'] ?>" <?= ($sp['stock'] <= 0) ? 'disabled' : '' ?>>
+                                <?= htmlspecialchars($sp['nama_sparepart']) ?> (Rp <?= number_format($sp['harga_jual'],0,',','.') ?>) - Stok: <?= $sp['stock'] ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
+                    <small style="color: #666;">* Tahan tombol Ctrl (Windows) / Command (Mac) untuk memilih lebih dari satu.</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Mekanik (Opsional)</label>
-                    <select name="id_mekanik" class="form-control">
-                        <option value="">-- Belum Ditugaskan --</option>
+                    <label>Mekanik</label>
+                    <select name="id_mekanik" class="form-control" required>
+                        <option value="">-- Pilih Mekanik --</option>
                         <?php foreach($mekanik_data as $m): ?>
                             <option value="<?= $m['id_pengguna'] ?>"><?= htmlspecialchars($m['username']) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <small style="color: #666; display: block; margin-top: 5px;">Jika Anda memilih mekanik, status pengerjaan akan dicatat.</small>
                 </div>
 
                 <div class="form-group">
@@ -198,8 +216,17 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
     </div>
 
     <script>
-        // Data mobil dari PHP ke JavaScript
-        const mobilData = <?= json_encode($mobil_data) ?>;
+        const mobilData = [
+            <?php foreach($mobil_data as $m): ?>
+            {
+                id_mobil: "<?= addslashes($m['id_mobil']) ?>",
+                id_pelanggan: "<?= addslashes($m['id_pelanggan']) ?>",
+                merk_mobil: "<?= addslashes($m['merk_mobil']) ?>",
+                tipe_mobil: "<?= addslashes($m['tipe_mobil']) ?>",
+                plat_nomor: "<?= addslashes($m['plat_nomor']) ?>"
+            },
+            <?php endforeach; ?>
+        ];
         const pelangganSelect = document.getElementById('id_pelanggan');
         const mobilSelect = document.getElementById('id_mobil');
 
@@ -226,3 +253,4 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
     </script>
 </body>
 </html>
+<?php include('../../includes/footer.php'); ?>

@@ -145,7 +145,25 @@ $result_detail = mysqli_query($conn, $query_detail);
             font-size: 16px;
             color: #333;
         }
-        /* Make sure it's responsive */
+        .rincian-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .rincian-container h3 {
+            margin-top: 0;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+        
         @media (max-width: 900px) {
             .report-summary {
                 flex-wrap: wrap;
@@ -284,7 +302,7 @@ $result_detail = mysqli_query($conn, $query_detail);
             </div>
         </div>
 
-        <div class="table-container">
+        <div class="rincian-container">
             <h3><i class="fas fa-list"></i> Rincian Permintaan Servis</h3>
             <table>
                 <thead>

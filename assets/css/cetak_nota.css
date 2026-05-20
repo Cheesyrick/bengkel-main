@@ -1,0 +1,139 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.nota-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0 0 10px 0;
+    color: #d32f2f;
+}
+
+.header p {
+    margin: 0;
+    color: #555;
+}
+
+.info-section {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.info-box {
+    width: 48%;
+}
+
+.info-box table {
+    width: 100%;
+}
+
+.info-box table td {
+    padding: 3px 0;
+    font-size: 14px;
+}
+
+.info-box table td:first-child {
+    width: 120px;
+    font-weight: bold;
+}
+
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.details-table th,
+.details-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.details-table th {
+    background-color: #f9f9f9;
+}
+
+.details-table .right {
+    text-align: right;
+}
+
+.total-section {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.total-box {
+    width: 300px;
+}
+
+.total-box table {
+    width: 100%;
+    font-size: 16px;
+}
+
+.total-box table td {
+    padding: 5px 0;
+}
+
+.total-box table tr.grand-total td {
+    font-weight: bold;
+    font-size: 18px;
+    border-top: 2px solid #333;
+    padding-top: 10px;
+}
+
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.btn-print {
+    display: block;
+    width: 100px;
+    margin: 20px auto;
+    padding: 10px;
+    text-align: center;
+    background: #d32f2f;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+@media print {
+    body {
+        background: #fff;
+        padding: 0;
+    }
+
+    .nota-container {
+        box-shadow: none;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .btn-print {
+        display: none;
+    }
+}

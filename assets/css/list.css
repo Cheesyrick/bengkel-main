@@ -4,8 +4,10 @@
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     margin: 20px auto;
-    max-width: 900px;
+    width: 100%;
+    max-width: 1500px;
     border-top: 4px solid #d32f2f;
+    box-sizing: border-box;
 }
 
 table {
