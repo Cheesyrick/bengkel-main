@@ -180,6 +180,13 @@ $result_detail = mysqli_query($conn, $query_detail);
                 min-width: 100%;
             }
         }
+        @media print {
+            body { padding-left: 0 !important; background-color: white !important; }
+            .sidebar, .filter-form, .footer, .btn-print { display: none !important; }
+            .content { margin-left: 0 !important; width: 100% !important; max-width: 100% !important; padding: 0 !important; box-shadow: none !important; }
+            .summary-card { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .tables-container > div { page-break-inside: avoid; }
+        }
     </style>
 </head>
 <body>
@@ -216,6 +223,7 @@ $result_detail = mysqli_query($conn, $query_detail);
                 </select>
 
                 <input type="submit" value="Tampilkan Laporan">
+                <button type="button" class="btn-print" onclick="window.print()" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-left: auto; display: flex; align-items: center; gap: 8px;"><i class="fas fa-print"></i> Cetak Laporan</button>
             </form>
         </div>
 
