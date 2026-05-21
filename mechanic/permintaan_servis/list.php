@@ -52,10 +52,6 @@ $no = 1;
                     <i class="fas fa-exclamation-circle"></i> <?php echo $_SESSION['pesan_error']; unset($_SESSION['pesan_error']); ?>
                 </div>
             <?php endif; ?>
-
-            <div style="text-align: left;">
-                <a href="add.php" class="btn btn-add"><i class="fas fa-plus"></i> Tambah Data</a>
-            </div>
             
             <table>
                 <thead>
@@ -108,5 +104,6 @@ $no = 1;
             </table>
         </div>
     </div>
+    <?php include('../../includes/footer.php'); ?>
 </body>
 </html>

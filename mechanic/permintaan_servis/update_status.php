@@ -82,9 +82,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="form-group">
                     <label>Status</label>
                     <select name="status" class="form-control" required>
-                        <?php $curr_status = $current_dp ? $current_dp['status_pengerjaan'] : 'pending'; ?>
-                        <option value="pending" <?= ($curr_status == 'pending') ? 'selected' : '' ?>>Pending</option>
-                        <option value="assigned" <?= ($curr_status == 'assigned') ? 'selected' : '' ?>>Assigned</option>
+                        <?php $curr_status = $current_dp ? $current_dp['status_pengerjaan'] : 'assigned'; ?>
+                        <option value="assigned" <?= ($curr_status == 'assigned' || $curr_status == 'pending') ? 'selected' : '' ?>>Assigned</option>
                         <option value="done" <?= ($curr_status == 'done') ? 'selected' : '' ?>>Done</option>
                     </select>
                 </div>

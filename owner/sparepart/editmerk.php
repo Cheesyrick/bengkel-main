@@ -92,3 +92,4 @@ $data = $result->fetch_assoc();
     </div>
 </body>
 </html>
+<?php include('../../includes/footer.php'); ?>

@@ -114,3 +114,4 @@ $no = 1;
     </div>
 </body>
 </html>
+<?php include('../../includes/footer.php'); ?>

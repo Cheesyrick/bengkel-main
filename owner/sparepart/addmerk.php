@@ -86,8 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="submit" class="btn btn-submit">Simpan Merk Sparepart</button>
             </form>
         </div>
-    </div>
-
+    </div>   
 </body>
 </html>
 <?php include('../../includes/footer.php'); ?>

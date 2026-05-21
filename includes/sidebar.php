@@ -220,7 +220,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 </label>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $base_url; ?>/mechanic/permintaan_servis/list.php">Lihat Permintaan Servis</a></li>
-                    <li><a href="<?php echo $base_url; ?>/mechanic/permintaan_servis/update_status.php">Update Status</a></li>
                 </ul>
             </li>
         <?php endif; ?>
