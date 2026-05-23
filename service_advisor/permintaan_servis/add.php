@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // 3. Insert detail_sparepart (Opsional, Multiple)
             if (!empty($id_spareparts) && is_array($id_spareparts)) {
+                $qty_spareparts = $_POST['qty_sparepart'] ?? [];
                 $query_harga_sp = "SELECT harga_jual, stock FROM sparepart WHERE id_sparepart = ?";
                 $stmt_hsp = $conn->prepare($query_harga_sp);
                 
@@ -53,16 +54,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $query_upd_sp = "UPDATE sparepart SET stock = stock - ? WHERE id_sparepart = ?";
                 $stmt_upd_sp = $conn->prepare($query_upd_sp);
 
-                foreach($id_spareparts as $id_sp) {
+                foreach($id_spareparts as $index => $id_sp) {
                     if(empty($id_sp)) continue;
+                    $qty_sp = isset($qty_spareparts[$index]) ? (int)$qty_spareparts[$index] : 1;
+                    if($qty_sp <= 0) continue;
                     
                     $stmt_hsp->bind_param("i", $id_sp);
                     $stmt_hsp->execute();
                     $res_hsp = $stmt_hsp->get_result()->fetch_assoc();
                     
-                    if($res_hsp && $res_hsp['stock'] > 0) {
+                    if($res_hsp && $res_hsp['stock'] >= $qty_sp) {
                         $harga_sp = $res_hsp['harga_jual'];
-                        $qty_sp = 1;
                         
                         // Insert detail
                         $stmt_dsp->bind_param("iiii", $id_permintaan, $id_sp, $qty_sp, $harga_sp);
@@ -71,6 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Deduct stock
                         $stmt_upd_sp->bind_param("ii", $qty_sp, $id_sp);
                         $stmt_upd_sp->execute();
+                    } else if ($res_hsp) {
+                        throw new Exception("Stok untuk sparepart ID $id_sp tidak mencukupi (Diminta: $qty_sp, Tersedia: {$res_hsp['stock']}).");
                     }
                 }
             }
@@ -175,15 +179,13 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
                 </div>
 
                 <div class="form-group">
-                    <label>Sparepart (Opsional, Bisa pilih lebih dari satu)</label>
-                    <select name="id_sparepart[]" class="form-control" multiple style="height: 100px;">
-                        <?php foreach($sp_data as $sp): ?>
-                            <option value="<?= $sp['id_sparepart'] ?>" <?= ($sp['stock'] <= 0) ? 'disabled' : '' ?>>
-                                <?= htmlspecialchars($sp['nama_sparepart']) ?> (Rp <?= number_format($sp['harga_jual'],0,',','.') ?>) - Stok: <?= $sp['stock'] ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <small style="color: #666;">* Tahan tombol Ctrl (Windows) / Command (Mac) untuk memilih lebih dari satu.</small>
+                    <label>Sparepart (Opsional)</label>
+                    <div id="sparepartContainer">
+                        <!-- Baris sparepart dinamis -->
+                    </div>
+                    <button type="button" class="btn btn-add-row btn-sm" id="btnTambahSparepart" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Tambah Baris Sparepart
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -250,6 +252,54 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
                 });
             }
         });
+
+        const sparepartData = [
+            <?php foreach($sp_data as $sp): ?>
+            {
+                id: "<?= addslashes($sp['id_sparepart']) ?>",
+                nama: "<?= addslashes($sp['nama_sparepart']) ?>",
+                harga: <?= $sp['harga_jual'] ?>,
+                stok: <?= $sp['stock'] ?>
+            },
+            <?php endforeach; ?>
+        ];
+
+        const sparepartContainer = document.getElementById('sparepartContainer');
+        const btnTambahSparepart = document.getElementById('btnTambahSparepart');
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        function createSparepartRow() {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '10px';
+            row.style.marginBottom = '10px';
+            row.style.alignItems = 'center';
+
+            let optionsHtml = '<option value="">-- Pilih Sparepart --</option>';
+            sparepartData.forEach(sp => {
+                const disabled = sp.stok <= 0 ? 'disabled' : '';
+                optionsHtml += `<option value="${sp.id}" ${disabled}>${sp.nama} (${formatRupiah(sp.harga)}) - Stok: ${sp.stok}</option>`;
+            });
+
+            row.innerHTML = `
+                <select name="id_sparepart[]" class="form-control" style="flex: 1;" required>
+                    ${optionsHtml}
+                </select>
+                <input type="number" name="qty_sparepart[]" class="form-control" placeholder="Qty" min="1" style="width: 100px;" required>
+                <button type="button" class="btn btn-danger btn-sm btn-hapus-sp" title="Hapus"><i class="fas fa-times"></i></button>
+            `;
+
+            row.querySelector('.btn-hapus-sp').addEventListener('click', function() {
+                row.remove();
+            });
+
+            sparepartContainer.appendChild(row);
+        }
+
+        btnTambahSparepart.addEventListener('click', createSparepartRow);
     </script>
 </body>
 </html>
