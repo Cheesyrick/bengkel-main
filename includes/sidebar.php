@@ -30,7 +30,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                 </ul>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <input type="checkbox" id="pelangganMenuToggle" class="sb-dropdown-cb">
                 <label for="pelangganMenuToggle" class="sb-dropdown-toggle">
                     <div style="display:flex; align-items:center;"><i class="fas fa-car"></i> Pelanggan & Mobil</div>
@@ -41,6 +41,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     <li><a href="<?php echo $base_url; ?>/owner/pelanggan_mobil/list.php">Lihat Pelanggan & Mobil</a></li>
                     <li><a href="<?php echo $base_url; ?>/owner/pelanggan_mobil/add.php">Input Pelanggan & Mobil</a></li>
                 </ul>
+            </li> -->
+
+            <li class="nav-item">
+                <a href="<?php echo $base_url; ?>/owner/pelanggan_mobil/list.php" class="sb-dropdown-toggle">
+                    <div style="display:flex; align-items:center;"><i class="fas fa-car"></i> Pelanggan & Mobil</div>
+                </a>
             </li>
 
             <li class="nav-item">
@@ -166,7 +172,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
             <li class="nav-section">SERVICE ADVISOR</li>
             <li><a href="<?php echo $base_url; ?>/auth/dashboardadmin.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
             
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <input type="checkbox" id="pelangganMenuToggleSA" class="sb-dropdown-cb">
                 <label for="pelangganMenuToggleSA" class="sb-dropdown-toggle">
                     <div style="display:flex; align-items:center;"><i class="fas fa-car"></i> Pelanggan & Mobil</div>
@@ -177,6 +183,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : '';
                     <li><a href="<?php echo $base_url; ?>/service_advisor/pelanggan_mobil/list.php">Lihat Pelanggan & Mobil</a></li>
                     <li><a href="<?php echo $base_url; ?>/service_advisor/pelanggan_mobil/add.php">Input Pelanggan & Mobil</a></li>
                 </ul>
+            </li> -->
+
+            <li class="nav-item">
+                <a href="<?php echo $base_url; ?>/service_advisor/pelanggan_mobil/list.php" class="sb-dropdown-toggle">
+                    <div style="display:flex; align-items:center;"><i class="fas fa-car"></i> Pelanggan & Mobil</div>
+                </a>
             </li>
 
             <li class="nav-item">
