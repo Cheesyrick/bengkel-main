@@ -68,7 +68,7 @@ $result = mysqli_query($conn, $query);
                             <td><strong><?php echo htmlspecialchars($row['nama_merk']); ?></strong></td>
                             <td>
                                 <a href="editmerk.php?id=<?php echo $row['id_merk'];?>" class="btn btn-edit"><i class="fas fa-edit"></i>Edit</a>
-                                <a href="deletmerk.php?id=<?php echo $row['id_merk'];?>" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus merk sparepart ini?');"><i class="fas fa-trash"></i>Hapus</a>
+                                <a href="deletemerk.php?id=<?php echo $row['id_merk'];?>" class="btn btn-delete" onclick="return confirm('Yakin ingin menghapus merk sparepart ini?');"><i class="fas fa-trash"></i>Hapus</a>
                             </td>
                         </tr>
                         <?php endwhile;

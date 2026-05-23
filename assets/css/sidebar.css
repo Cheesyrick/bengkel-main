@@ -4,17 +4,21 @@
     left: 0;
     width: 250px;
     height: 100vh;
-    background-color: #ffffff; /* Match footer background */
+    background-color: #ffffff;
+    /* Match footer background */
     color: #333333;
     overflow-y: auto;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.03); /* Match footer shadow */
-    border-right: 3px solid #d32f2f; /* Match footer accent */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.03);
+    /* Match footer shadow */
+    border-right: 3px solid #d32f2f;
+    /* Match footer accent */
     z-index: 1000;
 }
 
 .sidebar-header {
-    background-color: #ffffff; /* Match footer background */
+    background-color: #ffffff;
+    /* Match footer background */
     padding: 20px;
     text-align: center;
     border-bottom: 1px solid #eeeeee;
@@ -42,7 +46,8 @@
     padding: 15px 20px 5px;
     font-size: 12px;
     font-weight: bold;
-    color: #666; /* Match footer text-muted */
+    color: #666;
+    /* Match footer text-muted */
     letter-spacing: 1px;
     text-transform: uppercase;
 }
@@ -56,13 +61,15 @@
     font-size: 15px;
     transition: all 0.3s ease;
     border-left: 4px solid transparent;
-    font-weight: 500; /* Match footer link weight */
+    font-weight: 500;
+    /* Match footer link weight */
 }
 
 .nav-links li a:hover {
     background-color: #f8f9fa;
     border-left-color: #d32f2f;
-    color: #d32f2f; /* Match footer link hover */
+    color: #d32f2f;
+    /* Match footer link hover */
 }
 
 .nav-links li a i {
@@ -70,7 +77,8 @@
     font-size: 16px;
     margin-right: 10px;
     text-align: center;
-    color: #888; /* Match footer .mx-1 */
+    color: #888;
+    /* Match footer .mx-1 */
 }
 
 .nav-links li a:hover i {
@@ -78,7 +86,8 @@
 }
 
 .nav-links li a.logout-link {
-    color: #d32f2f; /* Match footer link */
+    color: #d32f2f;
+    /* Match footer link */
 }
 
 .nav-links li a.logout-link i {
@@ -87,23 +96,24 @@
 
 .nav-links li a.logout-link:hover {
     background-color: #fdf2f2;
-    border-left-color: #b71c1c; /* Match footer hover red */
-    color: #b71c1c; 
+    border-left-color: #b71c1c;
+    /* Match footer hover red */
+    color: #b71c1c;
 }
 
 /* Pastikan body memiliki padding kiri sebesar width sidebar agar konten tidak tertutup */
 body {
-    padding-left: 250px; 
+    padding-left: 250px;
     margin: 0;
 }
 
 /* Dropdown styles (Pure CSS Checkbox Hack) */
-.dropdown-cb {
+.sb-dropdown-cb {
     display: none;
 }
 
 /* Make the label look exactly like the a tags */
-.nav-links li label.dropdown-toggle {
+.nav-links li label.sb-dropdown-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -116,13 +126,13 @@ body {
     margin-bottom: 0;
 }
 
-.nav-links li label.dropdown-toggle:hover {
+.nav-links li label.sb-dropdown-toggle:hover {
     background-color: #f8f9fa;
     border-left-color: #d32f2f;
     color: #d32f2f;
 }
 
-.nav-links li label.dropdown-toggle i {
+.nav-links li label.sb-dropdown-toggle i {
     width: 25px;
     font-size: 16px;
     margin-right: 10px;
@@ -130,7 +140,7 @@ body {
     color: #888;
 }
 
-.nav-links li label.dropdown-toggle:hover i {
+.nav-links li label.sb-dropdown-toggle:hover i {
     color: #d32f2f;
 }
 
@@ -145,28 +155,28 @@ body {
 }
 
 /* Checkbox Toggle Logic */
-.dropdown-cb:checked ~ label.dropdown-toggle .icon-down {
+.sb-dropdown-cb:checked~label.sb-dropdown-toggle .icon-down {
     display: none !important;
 }
 
-.dropdown-cb:checked ~ label.dropdown-toggle .icon-up {
+.sb-dropdown-cb:checked~label.sb-dropdown-toggle .icon-up {
     display: inline-block !important;
 }
 
-.dropdown-cb:checked ~ .dropdown-menu {
+.sb-dropdown-cb:checked~.sb-dropdown-menu {
     display: block;
 }
 
-.nav-links .dropdown-menu {
+.nav-links .sb-dropdown-menu {
     display: none;
     list-style: none;
     padding: 0;
     margin: 0;
     background-color: #fafafa;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02);
 }
 
-.nav-links .dropdown-menu li a {
+.nav-links .sb-dropdown-menu li a {
     padding: 10px 20px 10px 45px;
     font-size: 14px;
     border-left: none;
@@ -175,20 +185,20 @@ body {
     display: block;
 }
 
-.nav-links .dropdown-menu li a::before {
+.nav-links .sb-dropdown-menu li a::before {
     content: '-';
     position: absolute;
     left: 25px;
     color: #888;
 }
 
-.nav-links .dropdown-menu li a:hover {
+.nav-links .sb-dropdown-menu li a:hover {
     background-color: #f1f1f1;
     color: #d32f2f;
 }
 
 /* Nested Dropdown Styles */
-.nested-dropdown-toggle {
+.nested-sb-dropdown-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -202,28 +212,28 @@ body {
     margin-bottom: 0;
 }
 
-.nested-dropdown-toggle::before {
+.nested-sb-dropdown-toggle::before {
     content: '-';
     position: absolute;
     left: 25px;
     color: #888;
 }
 
-.nested-dropdown-toggle:hover {
+.nested-sb-dropdown-toggle:hover {
     background-color: #f1f1f1 !important;
     color: #d32f2f !important;
 }
 
-.nested-dropdown-menu {
+.nested-sb-dropdown-menu {
     background-color: #eeeeee !important;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-.nav-links .nested-dropdown-menu li a {
+.nav-links .nested-sb-dropdown-menu li a {
     padding-left: 60px !important;
     font-size: 13px !important;
 }
 
-.nav-links .nested-dropdown-menu li a::before {
+.nav-links .nested-sb-dropdown-menu li a::before {
     left: 45px !important;
 }

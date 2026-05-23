@@ -11,7 +11,7 @@ $query = "SELECT pb.*, ps.keluhan, m.plat_nomor, p.nama_pelanggan
           JOIN permintaan_servis ps ON pb.id_permintaan = ps.id_permintaan
           JOIN mobil m ON ps.id_mobil = m.id_mobil
           JOIN pelanggan p ON m.id_pelanggan = p.id_pelanggan
-          ORDER BY pb.tanggal_bayar DESC";
+          ORDER BY pb.tanggal_bayar ASC";
 $result = $conn->query($query);
 $no = 1;
 ?>
