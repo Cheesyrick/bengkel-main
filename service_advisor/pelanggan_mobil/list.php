@@ -189,7 +189,7 @@ while ($row = mysqli_fetch_assoc($q_pelanggan)) {
                             <?php endforeach; ?>
                         </select>
                         <div class="input-group-append">
-                            <button type="button" class="btn btn-switch-green" id="btnSwitchPelanggan" title="Tambah Pelanggan Baru">
+                            <button type="button" class="btn btn-switch-green" id="btnSwitchPelanggan" title="Tambah Pelanggan Baru" data-dismiss="modal" data-toggle="modal" data-target="#modalTambahPelanggan">
                                 <i class="fas fa-plus"></i> Baru
                             </button>
                         </div>

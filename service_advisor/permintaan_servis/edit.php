@@ -368,7 +368,7 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
                     ${optionsHtml}
                 </select>
                 <input type="number" name="qty_sparepart[]" class="form-control" value="${qty}" placeholder="Qty" min="1" style="width: 100px;" required>
-                <button type="button" class="btn btn-danger btn-sm btn-hapus-sp" title="Hapus"><i class="fas fa-times"></i></button>
+                <button type="button" class="btn btn-add-row btn-sm btn-hapus-sp" title="Hapus"><i class="fas fa-times"></i></button>
             `;
 
             row.querySelector('.btn-hapus-sp').addEventListener('click', function() {
