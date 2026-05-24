@@ -10,13 +10,14 @@ include '../../config/config.php';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_pelanggan = $_POST['id_pelanggan'] ?? '';
     $id_mobil = $_POST['id_mobil'] ?? '';
-    $id_jasa = $_POST['id_jasa'] ?? '';
+    $id_jasas = $_POST['id_jasa'] ?? [];
+    $qty_jasas = $_POST['qty_jasa'] ?? [];
     $id_spareparts = $_POST['id_sparepart'] ?? [];
     $keluhan = $_POST['keluhan'] ?? '';
     $status = $_POST['status'] ?? 'pending';
     $id_mekanik = $_POST['id_mekanik'] ?? '';
 
-    if (empty($id_mobil) || empty($id_jasa) || empty($keluhan)) {
+    if (empty($id_mobil) || empty($id_jasas) || empty($keluhan)) {
         $_SESSION['pesan_error'] = "Mobil, Jasa, dan Keluhan harus diisi!";
     } else {
         $conn->begin_transaction();
@@ -29,18 +30,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_permintaan = $conn->insert_id;
 
             // 2. Insert detail_servis
-            $query_harga_jasa = "SELECT harga_jasa FROM jasa WHERE id_jasa = ?";
-            $stmt_hj = $conn->prepare($query_harga_jasa);
-            $stmt_hj->bind_param("i", $id_jasa);
-            $stmt_hj->execute();
-            $res_hj = $stmt_hj->get_result()->fetch_assoc();
-            $harga_jasa = $res_hj['harga_jasa'];
-            
-            $qty_jasa = 1;
-            $query_ds = "INSERT INTO detail_servis (id_permintaan, id_jasa, qty, total_biaya_jasa) VALUES (?, ?, ?, ?)";
-            $stmt_ds = $conn->prepare($query_ds);
-            $stmt_ds->bind_param("iiii", $id_permintaan, $id_jasa, $qty_jasa, $harga_jasa);
-            $stmt_ds->execute();
+            if (!empty($id_jasas) && is_array($id_jasas)) {
+                $query_harga_jasa = "SELECT harga_jasa FROM jasa WHERE id_jasa = ?";
+                $stmt_hj = $conn->prepare($query_harga_jasa);
+                
+                $query_ds = "INSERT INTO detail_servis (id_permintaan, id_jasa, qty, total_biaya_jasa) VALUES (?, ?, ?, ?)";
+                $stmt_ds = $conn->prepare($query_ds);
+
+                foreach($id_jasas as $index => $id_jasa) {
+                    if (empty($id_jasa)) continue;
+                    $qty_jasa = isset($qty_jasas[$index]) ? (int)$qty_jasas[$index] : 1;
+                    if ($qty_jasa <= 0) continue;
+
+                    $stmt_hj->bind_param("i", $id_jasa);
+                    $stmt_hj->execute();
+                    $res_hj = $stmt_hj->get_result()->fetch_assoc();
+                    
+                    if ($res_hj) {
+                        $harga_jasa = $res_hj['harga_jasa'];
+                        $stmt_ds->bind_param("iiii", $id_permintaan, $id_jasa, $qty_jasa, $harga_jasa);
+                        $stmt_ds->execute();
+                    }
+                }
+            } else {
+                throw new Exception("Minimal satu jasa servis harus dipilih.");
+            }
 
             // 3. Insert detail_sparepart (Opsional, Multiple)
             if (!empty($id_spareparts) && is_array($id_spareparts)) {
@@ -170,12 +184,12 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
 
                 <div class="form-group">
                     <label>Jasa Servis</label>
-                    <select name="id_jasa" class="form-control" required>
-                        <option value="">-- Pilih Jasa --</option>
-                        <?php foreach($jasa_data as $j): ?>
-                            <option value="<?= $j['id_jasa'] ?>"><?= htmlspecialchars($j['nama_jasa']) ?> (Rp <?= number_format($j['harga_jasa'],0,',','.') ?>)</option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div id="jasaContainer">
+                        <!-- Baris jasa dinamis -->
+                    </div>
+                    <button type="button" class="btn btn-add-row btn-sm" id="btnTambahJasa" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Tambah Baris Jasa
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -232,18 +246,11 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
         const pelangganSelect = document.getElementById('id_pelanggan');
         const mobilSelect = document.getElementById('id_mobil');
 
-        // Event listener saat pelanggan dipilih
-        pelangganSelect.addEventListener('change', function() {
-            const idPelanggan = this.value;
-            
-            // Reset dropdown mobil
+        // Initialize on load
+        function populateMobil(idPelanggan) {
             mobilSelect.innerHTML = '<option value="">-- Pilih Mobil --</option>';
-            
             if (idPelanggan) {
-                // Filter mobil berdasarkan id_pelanggan
                 const filteredMobil = mobilData.filter(m => m.id_pelanggan == idPelanggan);
-                
-                // Tambahkan option ke dropdown
                 filteredMobil.forEach(m => {
                     const option = document.createElement('option');
                     option.value = m.id_mobil;
@@ -251,7 +258,61 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
                     mobilSelect.appendChild(option);
                 });
             }
+        }
+        
+        populateMobil(pelangganSelect.value);
+
+        // Event listener
+        pelangganSelect.addEventListener('change', function() {
+            populateMobil(this.value);
         });
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        const jasaData = [
+            <?php foreach($jasa_data as $j): ?>
+            {
+                id: "<?= addslashes($j['id_jasa']) ?>",
+                nama: "<?= addslashes($j['nama_jasa']) ?>",
+                harga: <?= $j['harga_jasa'] ?>
+            },
+            <?php endforeach; ?>
+        ];
+
+        const jasaContainer = document.getElementById('jasaContainer');
+        const btnTambahJasa = document.getElementById('btnTambahJasa');
+
+        function createJasaRow() {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '10px';
+            row.style.marginBottom = '10px';
+            row.style.alignItems = 'center';
+
+            let optionsHtml = '<option value="">-- Pilih Jasa --</option>';
+            jasaData.forEach(j => {
+                optionsHtml += `<option value="${j.id}">${j.nama} (${formatRupiah(j.harga)})</option>`;
+            });
+
+            row.innerHTML = `
+                <select name="id_jasa[]" class="form-control" style="flex: 1;" required>
+                    ${optionsHtml}
+                </select>
+                <input type="number" name="qty_jasa[]" class="form-control" value="1" placeholder="Qty" min="1" style="width: 100px;" required>
+                <button type="button" class="btn btn-add-row btn-sm btn-hapus-jasa" title="Hapus"><i class="fas fa-times"></i></button>
+            `;
+
+            row.querySelector('.btn-hapus-jasa').addEventListener('click', function() {
+                row.remove();
+            });
+
+            jasaContainer.appendChild(row);
+        }
+
+        btnTambahJasa.addEventListener('click', createJasaRow);
+        createJasaRow();
 
         const sparepartData = [
             <?php foreach($sp_data as $sp): ?>
@@ -266,10 +327,6 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
 
         const sparepartContainer = document.getElementById('sparepartContainer');
         const btnTambahSparepart = document.getElementById('btnTambahSparepart');
-
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        }
 
         function createSparepartRow() {
             const row = document.createElement('div');

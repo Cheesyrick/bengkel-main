@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 // Fetch Permintaan Servis that are Done
 // We calculate the total from detail_servis and detail_sparepart
 $q_ps = "SELECT ps.id_permintaan, p.nama_pelanggan, m.plat_nomor, ps.keluhan,
-         COALESCE(SUM(ds.total_biaya_jasa), 0) + 
+         COALESCE(SUM(ds.qty * ds.total_biaya_jasa), 0) + 
          (SELECT COALESCE(SUM(dsp.qty * dsp.harga_satuan), 0) FROM detail_sparepart dsp WHERE dsp.id_permintaan = ps.id_permintaan) as total_tagihan
          FROM permintaan_servis ps
          JOIN mobil m ON ps.id_mobil = m.id_mobil

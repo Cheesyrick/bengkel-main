@@ -22,6 +22,12 @@ $ps_stmt->execute();
 $ps_result = $ps_stmt->get_result();
 $current_dp = $ps_result->fetch_assoc();
 
+if ($current_dp && ($current_dp['status_pengerjaan'] == 'done' || $current_dp['status_pengerjaan'] == 'selesai')) {
+    $_SESSION['pesan_error'] = "Pekerjaan sudah selesai dan tidak dapat diubah.";
+    header("Location: list.php");
+    exit();
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = $_POST['status'];
     $tgl_selesai = ($status == 'done' || $status == 'selesai') ? date('Y-m-d') : null;

@@ -17,13 +17,14 @@ $id_permintaan = $_GET['id_permintaan'];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_pelanggan = $_POST['id_pelanggan'] ?? '';
     $id_mobil = $_POST['id_mobil'] ?? '';
-    $id_jasa = $_POST['id_jasa'] ?? '';
+    $id_jasas = $_POST['id_jasa'] ?? [];
+    $qty_jasas = $_POST['qty_jasa'] ?? [];
     $id_spareparts = $_POST['id_sparepart'] ?? [];
     $keluhan = $_POST['keluhan'] ?? '';
     $status = $_POST['status'] ?? 'pending';
     $id_mekanik = $_POST['id_mekanik'] ?? '';
 
-    if (empty($id_mobil) || empty($id_jasa) || empty($keluhan)) {
+    if (empty($id_mobil) || empty($id_jasas) || empty($keluhan)) {
         $_SESSION['pesan_error'] = "Mobil, Jasa, dan Keluhan harus diisi!";
     } else {
         $conn->begin_transaction();
@@ -34,28 +35,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_ps->bind_param("isi", $id_mobil, $keluhan, $id_permintaan);
             $stmt_ps->execute();
 
-            // 2. Update detail_servis (assuming 1 to 1 for simplicity in this form)
-            $query_harga_jasa = "SELECT harga_jasa FROM jasa WHERE id_jasa = ?";
-            $stmt_hj = $conn->prepare($query_harga_jasa);
-            $stmt_hj->bind_param("i", $id_jasa);
-            $stmt_hj->execute();
-            $res_hj = $stmt_hj->get_result()->fetch_assoc();
-            $harga_jasa = $res_hj['harga_jasa'];
+            // 2. Update detail_servis
+            $conn->query("DELETE FROM detail_servis WHERE id_permintaan = $id_permintaan");
             
-            $qty_jasa = 1;
-            
-            // Check if detail_servis exists
-            $check_ds = $conn->query("SELECT id_detail_servis FROM detail_servis WHERE id_permintaan = $id_permintaan");
-            if ($check_ds->num_rows > 0) {
-                $query_ds = "UPDATE detail_servis SET id_jasa = ?, total_biaya_jasa = ? WHERE id_permintaan = ?";
-                $stmt_ds = $conn->prepare($query_ds);
-                $stmt_ds->bind_param("iii", $id_jasa, $harga_jasa, $id_permintaan);
-            } else {
+            if (!empty($id_jasas) && is_array($id_jasas)) {
+                $query_harga_jasa = "SELECT harga_jasa FROM jasa WHERE id_jasa = ?";
+                $stmt_hj = $conn->prepare($query_harga_jasa);
+                
                 $query_ds = "INSERT INTO detail_servis (id_permintaan, id_jasa, qty, total_biaya_jasa) VALUES (?, ?, ?, ?)";
                 $stmt_ds = $conn->prepare($query_ds);
-                $stmt_ds->bind_param("iiii", $id_permintaan, $id_jasa, $qty_jasa, $harga_jasa);
+
+                foreach($id_jasas as $index => $id_jasa) {
+                    if (empty($id_jasa)) continue;
+                    $qty_jasa = isset($qty_jasas[$index]) ? (int)$qty_jasas[$index] : 1;
+                    if ($qty_jasa <= 0) continue;
+
+                    $stmt_hj->bind_param("i", $id_jasa);
+                    $stmt_hj->execute();
+                    $res_hj = $stmt_hj->get_result()->fetch_assoc();
+                    
+                    if ($res_hj) {
+                        $harga_jasa = $res_hj['harga_jasa'];
+                        $stmt_ds->bind_param("iiii", $id_permintaan, $id_jasa, $qty_jasa, $harga_jasa);
+                        $stmt_ds->execute();
+                    }
+                }
+            } else {
+                throw new Exception("Minimal satu jasa servis harus dipilih.");
             }
-            $stmt_ds->execute();
 
             // 3. Update detail_sparepart
             // First, restore stock for old spareparts
@@ -154,7 +161,14 @@ if (!$current_ps) {
     exit();
 }
 
-$current_ds = $conn->query("SELECT * FROM detail_servis WHERE id_permintaan = $id_permintaan")->fetch_assoc();
+$current_ds_query = $conn->query("SELECT id_jasa, qty FROM detail_servis WHERE id_permintaan = $id_permintaan");
+$current_ds_data = [];
+while ($r = $current_ds_query->fetch_assoc()) {
+    $current_ds_data[] = [
+        'id' => $r['id_jasa'],
+        'qty' => $r['qty']
+    ];
+}
 $current_dsp_query = $conn->query("SELECT id_sparepart, qty FROM detail_sparepart WHERE id_permintaan = $id_permintaan");
 $current_dsp_data = [];
 while ($r = $current_dsp_query->fetch_assoc()) {
@@ -237,14 +251,12 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
 
                 <div class="form-group">
                     <label>Jasa Servis</label>
-                    <select name="id_jasa" class="form-control" required>
-                        <option value="">-- Pilih Jasa --</option>
-                        <?php foreach($jasa_data as $j): ?>
-                            <option value="<?= $j['id_jasa'] ?>" <?= ($current_ds && $j['id_jasa'] == $current_ds['id_jasa']) ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($j['nama_jasa']) ?> (Rp <?= number_format($j['harga_jasa'],0,',','.') ?>)
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div id="jasaContainer">
+                        <!-- Baris jasa dinamis -->
+                    </div>
+                    <button type="button" class="btn btn-add-row btn-sm" id="btnTambahJasa" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Tambah Baris Jasa
+                    </button>
                 </div>
 
                 <div class="form-group">
@@ -329,6 +341,61 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
             populateMobil(this.value, null);
         });
 
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        const jasaData = [
+            <?php foreach($jasa_data as $j): ?>
+            {
+                id: "<?= addslashes($j['id_jasa']) ?>",
+                nama: "<?= addslashes($j['nama_jasa']) ?>",
+                harga: <?= $j['harga_jasa'] ?>
+            },
+            <?php endforeach; ?>
+        ];
+        
+        const currentJasas = <?= json_encode($current_ds_data) ?>;
+
+        const jasaContainer = document.getElementById('jasaContainer');
+        const btnTambahJasa = document.getElementById('btnTambahJasa');
+
+        function createJasaRow(selectedId = '', qty = 1) {
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '10px';
+            row.style.marginBottom = '10px';
+            row.style.alignItems = 'center';
+
+            let optionsHtml = '<option value="">-- Pilih Jasa --</option>';
+            jasaData.forEach(j => {
+                const selected = j.id == selectedId ? 'selected' : '';
+                optionsHtml += `<option value="${j.id}" ${selected}>${j.nama} (${formatRupiah(j.harga)})</option>`;
+            });
+
+            row.innerHTML = `
+                <select name="id_jasa[]" class="form-control" style="flex: 1;" required>
+                    ${optionsHtml}
+                </select>
+                <input type="number" name="qty_jasa[]" class="form-control" value="${qty}" placeholder="Qty" min="1" style="width: 100px;" required>
+                <button type="button" class="btn btn-add-row btn-sm btn-hapus-jasa" title="Hapus"><i class="fas fa-times"></i></button>
+            `;
+
+            row.querySelector('.btn-hapus-jasa').addEventListener('click', function() {
+                row.remove();
+            });
+
+            jasaContainer.appendChild(row);
+        }
+
+        btnTambahJasa.addEventListener('click', () => createJasaRow());
+        
+        if (currentJasas && currentJasas.length > 0) {
+            currentJasas.forEach(j => createJasaRow(j.id, j.qty));
+        } else {
+            createJasaRow();
+        }
+
         const sparepartData = [
             <?php foreach($sp_data as $sp): ?>
             {
@@ -344,10 +411,6 @@ while ($r = $res_mekanik->fetch_assoc()) $mekanik_data[] = $r;
 
         const sparepartContainer = document.getElementById('sparepartContainer');
         const btnTambahSparepart = document.getElementById('btnTambahSparepart');
-
-        function formatRupiah(angka) {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
-        }
 
         function createSparepartRow(selectedId = '', qty = 1) {
             const row = document.createElement('div');

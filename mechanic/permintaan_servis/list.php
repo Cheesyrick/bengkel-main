@@ -96,7 +96,9 @@ $no = 1;
                                 <span class="<?php echo $status_class; ?>"><?php echo ucfirst($status_val); ?></span>
                             </td>
                             <td>
-                                <a href="update_status.php?id_permintaan=<?php echo $row['id_permintaan']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                                <?php if ($status_val !== 'selesai' && $status_val !== 'done'): ?>
+                                    <a href="update_status.php?id_permintaan=<?php echo $row['id_permintaan']; ?>" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endwhile; ?>
