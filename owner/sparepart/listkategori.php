@@ -27,8 +27,9 @@ $result = mysqli_query($conn, $query);
 
     <div class="content">
         <div class="table-container">
-            <h2 style="margin-top: 0; color: #333; border-bottom: 1px solid #eee;
-            padding-bottom: 15px; margin-bottom: 20px;"> Daftar Kategori Sparepart</h2>
+            <h2 style="margin-top: 0; color: #333; text-align: left; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px;">
+                <i class="fas fa-tags" style="color: #d32f2f;"></i> Daftar Kategori Sparepart
+            </h2>
             
             <?php if(isset($_SESSION['pesan_sukses'])): ?>
                 <div class="alert alert-success">
